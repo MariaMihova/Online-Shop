@@ -184,19 +184,17 @@ public class ControllerImpl implements Controller {
         return currentComputer.toString();
     }
 
-    @Override
+     @Override
     public String BuyBestComputer(double budget) {
-        Computer currentComputer = this.computers.stream()
-                .filter(c -> c.getPrice() <= budget)
-                .sorted((a, b) -> Double.compare(b.getPrice(), a.getPrice()))
-                .findFirst()
-                .orElse(null);
-        double computerPrice = currentComputer.getPrice();
-        if(currentComputer == null || computerPrice > budget){
-            throw new IllegalArgumentException(String.format(ExceptionMessages.CAN_NOT_BUY_COMPUTER, budget));
+        Computer computer = this.computers.stream().filter(c -> c.getPrice() <= budget)
+                .max(Comparator.comparingDouble(Computer::getOverallPerformance))
+                .stream().findFirst().orElse(null);
+
+        if (computer == null){
+            throw new IllegalArgumentException(String.format(ExceptionMessages.CAN_NOT_BUY_COMPUTER,budget));
         }
-        this.computers.remove(currentComputer);
-        return currentComputer.toString();
+        this.computers.remove(computer);
+        return computer.toString();
     }
 
     @Override
